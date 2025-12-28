@@ -1,21 +1,17 @@
 import pandas as pd
 
-# create example df
-employee = pd.DataFrame({
-    'id':[1,2,3,4,5],
-    'name':['Joe','Jim','Henry','Sam','Max'],
-    'salary':[70000,90000,80000,60000,90000],
-    'departmentId':[1,1,2,2,1]
-})
-
-department = pd.DataFrame({
-    'id':[1,2],
-    'name':['IT','Sales']
-})
-
 # define function
 def department_highest_salary(employee: pd.DataFrame, department: pd.DataFrame):
     '''
     find higest salary per each department <- sort by salary and departmentId <- split into separate search for each department
     join with department table to get department name
     '''
+    employee['salaryRank'] = employee.groupby('departmentId')['salary'].rank(ascending=False, method='min')
+    df_filter = employee[employee['salaryRank'] == 1]
+    df_merged = pd.merge(df_filter, department, left_on='departmentId', right_on='id', how='left')
+    df_reordered = df_merged[['name_y','name_x','salary']].rename(columns={
+        'name_y':'Department',
+        'name_x':'Employee',
+        'salary':'Salary'
+    })
+    return df_reordered
