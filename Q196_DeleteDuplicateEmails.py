@@ -11,3 +11,10 @@ def delete_duplicate_emails_2(person: pd.DataFrame):
     person['rank'] = person.groupby('email').cumcount()
     person = person[person['rank']==0] # only keep first unique record
     return person[['id','email']]
+
+def delete_duplicate_emails_3(person: pd.DataFrame):
+    person.sort_values(by='id', inplace=True)
+    person.drop_duplicates(subset='email', keep='first', inplace=True)
+
+    # subset: based on duplicates in column 'email' only
+    # keep: only keep first duplicated record
